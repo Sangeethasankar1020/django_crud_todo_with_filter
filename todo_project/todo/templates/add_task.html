@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Add Task</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+      <h1 class="text-3xl font-bold mb-4">Add New Task</h1>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-4">
+          <label for="name" class="block text-lg">Task Name:</label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            class="p-2 border rounded w-full"
+            required
+          />
+        </div>
+
+        <div class="mb-4">
+          <label for="description" class="block text-lg">Description:</label>
+          <textarea
+            name="description"
+            id="description"
+            class="p-2 border rounded w-full"
+          ></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="status" class="block text-lg">Status:</label>
+          <select name="status" id="status" class="p-2 border rounded w-full">
+            {% for status in status_options %}
+            <option value="{{ status }}">{{ status|title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <button type="submit" class="bg-green-500 text-white p-2 rounded">
+            Add Task
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

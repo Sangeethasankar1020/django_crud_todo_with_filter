@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <style>
+      .flatpickr-calendar {
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+      <h1 class="text-3xl font-bold mb-4">Todo List</h1>
+
+      <!-- Add Task Form -->
+      <div class="mb-8 p-4 bg-white shadow-lg rounded">
+        <h2 class="text-2xl mb-4">Add New Task</h2>
+        <form method="POST" action="/add/">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="name" class="block text-lg">Task Name:</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              class="p-3 border rounded w-full"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="description" class="block text-lg">Description:</label>
+            <textarea
+              name="description"
+              id="description"
+              class="p-3 border rounded w-full"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label for="status" class="block text-lg">Status:</label>
+            <select name="status" id="status" class="p-3 border rounded w-full">
+              {% for status in status_options %}
+              <option value="{{ status }}">{{ status|title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label for="date" class="block text-lg">Due Date:</label>
+            <input
+              type="text"
+              name="date"
+              id="date"
+              class="p-3 border rounded w-full date-picker"
+              placeholder="Select Date"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="time" class="block text-lg">Due Time:</label>
+            <input
+              type="time"
+              name="time"
+              id="time"
+              class="p-3 border rounded w-full"
+              required
+            />
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              class="bg-green-500 text-white p-3 rounded w-full"
+            >
+              Add Task
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="mb-8 p-4 bg-white shadow-lg rounded">
+        <h2 class="text-2xl mb-4">Filter Tasks</h2>
+
+        <div class="flex flex-col md:flex-row md:space-x-4">
+          <!-- Filter by Status -->
+          <form
+            method="GET"
+            action="/"
+            class="flex mb-4 md:mb-0 w-full md:w-1/3"
+          >
+            <div class="mr-4 w-full">
+              <label for="status" class="block text-lg"
+                >Filter by Status:</label
+              >
+              <select
+                name="status"
+                id="status"
+                class="p-3 border rounded w-full"
+              >
+                <option value="all">All Statuses</option>
+                {% for status in status_options %}
+                <option value="{{ status }}">{{ status|title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button
+              type="submit"
+              class="p-2 bg-blue-500 text-white rounded w-full text-base"
+            >
+              Filter
+            </button>
+          </form>
+
+          <!-- Filter by Date Range -->
+          <form
+            method="GET"
+            action="/"
+            class="flex mb-4 md:mb-0 w-full md:w-1/3"
+          >
+            <div class="mr-4 w-full">
+              <label class="block text-lg">From Date:</label>
+              <input
+                type="text"
+                name="date_from"
+                id="date_from"
+                class="p-3 border rounded w-full date-picker"
+                placeholder="Select Date"
+              />
+            </div>
+            <div class="mr-4 w-full">
+              <label class="block text-lg">To Date:</label>
+              <input
+                type="text"
+                name="date_to"
+                id="date_to"
+                class="p-3 border rounded w-full date-picker"
+                placeholder="Select Date"
+              />
+            </div>
+            <button
+              type="submit"
+              class="p-2 bg-blue-500 text-white rounded w-full text-base"
+            >
+              Filter
+            </button>
+          </form>
+
+          <!-- Filter by Time Range -->
+          <form method="GET" action="/" class="flex w-full md:w-1/3">
+            <div class="mr-4 w-full">
+              <label class="block text-lg">From Time:</label>
+              <input
+                type="time"
+                name="time_from"
+                class="p-3 border rounded w-full"
+              />
+            </div>
+            <div class="mr-4 w-full">
+              <label class="block text-lg">To Time:</label>
+              <input
+                type="time"
+                name="time_to"
+                class="p-3 border rounded w-full"
+              />
+            </div>
+            <button
+              type="submit"
+              class="p-2 bg-blue-500 text-white rounded w-full text-base"
+            >
+              Filter
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Task Listing -->
+      <table class="table-auto w-full bg-white shadow-lg rounded">
+        <thead>
+          <tr>
+            <th class="px-4 py-2">Task Name</th>
+            <th class="px-4 py-2">Description</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Date</th>
+            <th class="px-4 py-2">Time</th>
+            <th class="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+          <tr>
+            <td class="border px-4 py-2">{{ task.name }}</td>
+            <td class="border px-4 py-2">{{ task.description }}</td>
+            <td class="border px-4 py-2">{{ task.status }}</td>
+            <td class="border px-4 py-2">{{ task.date }}</td>
+            <td class="border px-4 py-2">{{ task.time }}</td>
+            <td class="border px-4 py-2">
+              <a href="/update/{{ task.id }}" class="text-blue-500">Edit</a> |
+              <a href="/delete/{{ task.id }}" class="text-red-500">Delete</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-4">No tasks found</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+      // Initialize Flatpickr for date input fields
+      flatpickr(".date-picker", {
+        dateFormat: "Y-m-d",
+        allowInput: true,
+      });
+    </script>
+  </body>
+</html>

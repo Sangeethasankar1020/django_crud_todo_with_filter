@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Update Task</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+      <h1 class="text-3xl font-bold mb-4">Update Task</h1>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-4">
+          <label for="name" class="block text-lg">Task Name:</label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            value="{{ task.name }}"
+            class="p-2 border rounded w-full"
+            required
+          />
+        </div>
+
+        <div class="mb-4">
+          <label for="description" class="block text-lg">Description:</label>
+          <textarea
+            name="description"
+            id="description"
+            class="p-2 border rounded w-full"
+          >{{ task.description }}</textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="status" class="block text-lg">Status:</label>
+          <select name="status" id="status" class="p-2 border rounded w-full">
+            {% for status in status_options %}
+            <option value="{{ status }}" {% if task.status == status %}selected{% endif %}>
+              {{ status|title }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <button type="submit" class="bg-blue-500 text-white p-2 rounded">
+            Update Task
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
